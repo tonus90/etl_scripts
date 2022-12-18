@@ -1,0 +1,17 @@
+version: '3'
+services:
+  clickhouse:
+    image: tonus88/my_clickhouse:latest
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+
+  airflow:
+    image: tonus88/my_airflow:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - clickhouse
+    volumes:
+      - ./dags:/home/user1/airflow/dags
+      
