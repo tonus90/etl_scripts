@@ -1,4 +1,4 @@
--- DDL prepare hub_user
+-- Create table hub_user
 DROP TABLE IF EXISTS dds.hub_user CASCADE;
 CREATE TABLE IF NOT EXISTS dds.hub_user (
   user_id INT PRIMARY KEY,
@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS dds.hub_user (
   unique (user_hash_key)
 );
 
+-- Create table hub_post
 DROP TABLE IF EXISTS dds.hub_post CASCADE;
 CREATE TABLE dds.hub_post (
   post_id INT PRIMARY KEY,
@@ -17,6 +18,7 @@ CREATE TABLE dds.hub_post (
   unique (post_hash_key)
 );
 
+-- Create table link users_posts
 DROP TABLE IF EXISTS dds.link_user_post CASCADE;
 CREATE TABLE IF NOT EXISTS dds.link_user_post (
   user_id INT NOT NULL,
@@ -30,6 +32,7 @@ CREATE TABLE IF NOT EXISTS dds.link_user_post (
   unique (user_post_hash_key)
 );
 
+-- Create table satellite for posts
 DROP TABLE IF EXISTS dds.satellite_post CASCADE;
 CREATE TABLE IF NOT EXISTS dds.satellite_post (
   post_hash_key CHAR(32) NOT NULL,
