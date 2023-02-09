@@ -1,3 +1,4 @@
+-- Create post table in stg layer
 CREATE TABLE IF NOT EXISTS stg.post (
     id INT,
     userid INT,
