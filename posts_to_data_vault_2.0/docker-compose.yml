@@ -2,7 +2,7 @@ version: '3'
 services:
 
   airflow:
-    image: tonus88/airflow_fresh:4
+    image: tonus88/airflow_fresh:5
     ports:
       - "8080:8080"
     environment:
