@@ -1,0 +1,5 @@
+- dowload docker-compose.yml to ur work directory
+- run inside ur workdir: docker-compose up
+- if it needs change ownder of dags directory on ur local: sudo chmown myuser ./dags
+- download /dags/btc_rate.py to urs /work_dir/dags
+- run dag in airflow webUI (user: admin, pswd: admin)
