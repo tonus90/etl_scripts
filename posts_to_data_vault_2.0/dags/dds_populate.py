@@ -11,7 +11,7 @@ default_args = {
 
 with DAG(
         dag_id='fill_dds',
-        schedule_interval='@daily',
+        schedule_interval='15 0 * * *',
         default_args=default_args,
         catchup=False,
 ) as dag:

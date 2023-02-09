@@ -52,7 +52,7 @@ def fill_db(**kwargs):
 
 with DAG(
         dag_id='post_stg',
-        schedule_interval='@daily',
+        schedule_interval='10 0 * * *',
         default_args=default_args,
         catchup=False
 ) as dag:
