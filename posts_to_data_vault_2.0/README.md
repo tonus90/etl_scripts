@@ -1,0 +1,11 @@
+ETL процесс posts_to_data_vault_2.0 собирает данные через API https://jsonplaceholder.typicode.com/posts/
+и складывает их в слой DataLake (в данном исполнении путь на локальную систему), далее отправляет данные
+в Stage слой базы данных Postgres, добавля мета информацию (колонки) load_date, source_system.
+Второй скрипт создает таблицы слоя DDS для модели данных DataVault 2.0, и помещает туда данные.
+ETL работает с помощью Airflow, состоит из двух скриптов, двух файлов DDL, и файла DML для загрузки данных в слой DDS.
+Для проверки можно использовать файл docker-compose.yml, сохранив его в свою директорию, после чего выполнить
+из директории команду: docker-compose up -d.
+На localhost:8080 будет работать webserver Airflow (u: admin, pswd: admin),
+На порту 54300 будет работать база данных Postgres (database: dwh, user: root, pswd: postgres).
+Через airflow запустить последовательно даги pos_stg, populate_dds, убедиться что в базе данных создались таблицы и заполнились.
+По умолчанию pos_stg запускается в 00.10, populate_dds в 00.15 раз в сутки.
