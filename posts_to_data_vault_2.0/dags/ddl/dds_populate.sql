@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION dds.populate_hub()
 RETURNS VOID AS $$
 BEGIN
   INSERT INTO dds.hub_user (user_id, user_hash_key, load_date, source_system)
-  SELECT DISTINCT userid, MD5(userid::TEXT), load_date, source_system
+  SELECT distinct userid, MD5(userid::TEXT), load_date, source_system
   FROM stg.post
   WHERE userid NOT IN (SELECT user_id FROM dds.hub_user);
   INSERT INTO dds.hub_post (post_id, post_hash_key, load_date, source_system)
@@ -23,8 +23,8 @@ BEGIN
   INSERT INTO dds.link_user_post (user_post_hash_key, user_id, post_id, load_date, source_system)
   SELECT MD5(ROW(userid, id)::TEXT), userid, id, load_date, source_system
   FROM stg.post
-  WHERE userid NOT IN (SELECT user_id FROM dds.hub_user) AND 
-        id not in (SELECT post_id FROM dds.hub_post);
+  WHERE userid NOT IN (SELECT user_id FROM dds.link_user_post) AND 
+        id not in (SELECT post_id FROM dds.link_user_post);
 END;
 $$ LANGUAGE plpgsql;
 

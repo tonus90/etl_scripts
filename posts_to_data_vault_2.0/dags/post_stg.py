@@ -7,12 +7,29 @@ from airflow.operators.python import PythonOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.telegram.operators.telegram import TelegramOperator
+
+
+# send notify to telegram bot @an_emil_bot on tasks failure
+def send_notify_on_failure(context):
+    task_instance = context['task_instance']
+    message = f"Task failed: {task_instance.task_id}"
+    notify_fail = TelegramOperator(
+        task_id=f'telegram_alert_task',
+        telegram_conn_id='telegram_conn',
+        chat_id='4084485',
+        text=message,
+        dag=dag,
+    )
+    return notify_fail.execute(context)
+
 
 default_args = {
     'owner': 'emil`',
     'start_date': dt.datetime(2023, 2, 8),
     'retries': 1,
     'retry_delay': dt.timedelta(minutes=1),
+    'on_failure_callback': send_notify_on_failure,
 }
 
 
@@ -35,7 +52,6 @@ def create_csv(**kwargs):
         response.raise_for_status()
 
 
-
 # populate stg layer in data warehouse
 def fill_db(**kwargs):
     execution_date_str = kwargs['ti'].xcom_pull(task_ids='save_json_csv')
@@ -56,11 +72,21 @@ with DAG(
         default_args=default_args,
         catchup=False
 ) as dag:
+
+    # greeting to telegram bot @an_emil_bot
+    first_task = TelegramOperator(
+        task_id='greeting',
+        telegram_conn_id='telegram_conn',
+        chat_id='4084485',
+        text='''I'm starting to collect posts. TIME: {{ execution_date }}''',
+    )
+
     # save data from API to csv
     save_posts = PythonOperator(
         task_id='save_json_csv',
         python_callable=create_csv,
         provide_context=True,
+        on_failure_callback=send_notify_on_failure,
         params={'url': 'https://jsonplaceholder.typicode.com/posts'},
     )
 
@@ -72,18 +98,21 @@ with DAG(
             sql='''CREATE SCHEMA IF NOT EXISTS stg;
                     CREATE SCHEMA IF NOT EXISTS dds;
                     DROP SCHEMA IF EXISTS public CASCADE;''',
+            on_failure_callback=send_notify_on_failure,
         )
 
         drop_tables = PostgresOperator(
             task_id='drop_tables_in_stg',
             postgres_conn_id='postgres_default',
             sql='''DROP TABLE IF EXISTS stg.post;''',
+            on_failure_callback=send_notify_on_failure,
         )
 
         create_tables = PostgresOperator(
             task_id='create_tables_in_stg',
             postgres_conn_id='postgres_default',
             sql=f'''./ddl/stg_ddl.sql''',
+            on_failure_callback=send_notify_on_failure,
         )
     create_schemas >> drop_tables >> create_tables
 
@@ -92,6 +121,15 @@ with DAG(
         task_id='filling_post_table',
         python_callable=fill_db,
         provide_context=True,
+        on_failure_callback=send_notify_on_failure,
     )
 
-    save_posts >> prepare_table >> fill_post_table
+    # msg about ending dag to telegram bot @an_emil_bot
+    last_task = TelegramOperator(
+        task_id='finishing',
+        telegram_conn_id='telegram_conn',
+        chat_id='4084485',
+        text='''STG layer is filled up. TIME: {{ execution_date }}''',
+    )
+
+    first_task >> save_posts >> prepare_table >> fill_post_table >> last_task
