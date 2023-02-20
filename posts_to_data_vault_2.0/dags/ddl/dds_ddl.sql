@@ -41,6 +41,5 @@ CREATE TABLE IF NOT EXISTS dds.satellite_post (
   load_date TIMESTAMP,
   source_system VARCHAR(50),
   post_hash_diff CHAR(32),
-  FOREIGN KEY (post_hash_key) REFERENCES dds.hub_post (post_hash_key),
-  unique(post_hash_diff)
+  FOREIGN KEY (post_hash_key) REFERENCES dds.hub_post (post_hash_key)
 );
