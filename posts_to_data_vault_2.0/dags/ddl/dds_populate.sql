@@ -37,7 +37,7 @@ RETURNS VOID AS $$
 BEGIN
   INSERT INTO dds.satellite_post (post_hash_key, title, body, load_date, source_system, post_hash_diff)
   SELECT MD5(id::TEXT), title, body, load_date, source_system, 
-            MD5(ROW(title, body, load_date, source_system)::TEXT)
+            MD5(ROW(title, body, source_system)::TEXT)
   FROM stg.post;
 END;
 $$ LANGUAGE plpgsql;
