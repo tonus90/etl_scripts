@@ -35,6 +35,6 @@ CREATE TABLE IF NOT EXISTS dds.satellite_post (
   body TEXT NOT NULL,
   load_date TIMESTAMP,
   source_system VARCHAR(50),
-  post_hash_diff CHAR(32),
+  post_hash_diff CHAR(32)
   unique(post_hash_diff)
 );
