@@ -20,8 +20,8 @@ select dds.populate_hub();
 CREATE OR REPLACE FUNCTION dds.populate_user_post_link()
 RETURNS VOID AS $$
 BEGIN
-  INSERT INTO dds.link_user_post (user_post_hash_key, user_id, post_id, load_date, source_system)
-  SELECT MD5(ROW(userid, id)::TEXT), userid, id, load_date, source_system
+  INSERT INTO dds.link_user_post (user_hash_key, post_hash_key, load_date, source_system)
+  SELECT MD5(ROW(userid)::TEXT), MD5(ROW(id)::TEXT), load_date, source_system
   FROM stg.post
   WHERE userid NOT IN (SELECT user_id FROM dds.link_user_post) AND 
         id not in (SELECT post_id FROM dds.link_user_post);
@@ -37,7 +37,7 @@ RETURNS VOID AS $$
 BEGIN
   INSERT INTO dds.satellite_post (post_hash_key, title, body, load_date, source_system, post_hash_diff)
   SELECT MD5(id::TEXT), title, body, load_date, source_system, 
-            MD5(ROW(title, body, load_date, source_system)::TEXT)
+            MD5(ROW(title, body, source_system)::TEXT)
   FROM stg.post;
 END;
 $$ LANGUAGE plpgsql;

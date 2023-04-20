@@ -21,14 +21,11 @@ CREATE TABLE dds.hub_post (
 -- Create table link users_posts
 DROP TABLE IF EXISTS dds.link_user_post CASCADE;
 CREATE TABLE IF NOT EXISTS dds.link_user_post (
-  user_id INT NOT NULL,
-  post_id INT NOT NULL,
-  user_post_hash_key CHAR(32) NOT NULL,
+  post_hash_key CHAR(32) NOT NULL,
+  user_hash_key CHAR(32) NOT NULL,
   load_date TIMESTAMP,
   source_system VARCHAR(50),
-  PRIMARY KEY (user_id, post_id),
-  FOREIGN KEY (user_id) REFERENCES dds.hub_user (user_id),
-  FOREIGN KEY (post_id) REFERENCES dds.hub_post (post_id),
+  PRIMARY KEY (post_hash_key, user_hash_key),
   unique (user_post_hash_key)
 );
 
@@ -41,6 +38,4 @@ CREATE TABLE IF NOT EXISTS dds.satellite_post (
   load_date TIMESTAMP,
   source_system VARCHAR(50),
   post_hash_diff CHAR(32),
-  FOREIGN KEY (post_hash_key) REFERENCES dds.hub_post (post_hash_key),
-  unique(post_hash_diff)
 );

@@ -25,8 +25,6 @@ CREATE TABLE IF NOT EXISTS dds.link_user_post (
   load_date TIMESTAMP,
   source_system VARCHAR(50),
   PRIMARY KEY (user_id, post_id),
-  FOREIGN KEY (user_id) REFERENCES dds.hub_user (user_id),
-  FOREIGN KEY (post_id) REFERENCES dds.hub_post (post_id),
   unique (user_post_hash_key)
 );
 
@@ -37,7 +35,6 @@ CREATE TABLE IF NOT EXISTS dds.satellite_post (
   body TEXT NOT NULL,
   load_date TIMESTAMP,
   source_system VARCHAR(50),
-  post_hash_diff CHAR(32),
-  FOREIGN KEY (post_hash_key) REFERENCES dds.hub_post (post_hash_key),
+  post_hash_diff CHAR(32)
   unique(post_hash_diff)
 );
