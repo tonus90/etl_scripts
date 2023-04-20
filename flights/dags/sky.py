@@ -35,15 +35,18 @@ def populate_postgres(**context):
     conn = pg_hook.get_conn()
     month_begin = context['templates_dict']['month_begin']
     month_end = ds_add(context['templates_dict']['next_month'], -1).replace('-', '')
-    for chunk in pd.read_csv(_get_path(f'flights/flightlist_{month_begin}_{month_end}.csv'), chunksize=100000):
-        df = chunk[
-            ((chunk['origin'].notna()) | (chunk['destination'].notna())) & (chunk['origin'] != chunk['destination'])]
-        buffer = StringIO()
-        df.to_csv(buffer, index=False, header=False, sep='\t')
-        buffer.seek(0)
-        with conn.cursor() as cursor:
-            cursor.copy_from(buffer, 'opensky', null='', sep='\t')
-            conn.commit()
+    try:
+        for chunk in pd.read_csv(_get_path(f'flights/flightlist_{month_begin}_{month_end}.csv'), chunksize=100000):
+            df = chunk[
+                ((chunk['origin'].notna()) | (chunk['destination'].notna())) & (chunk['origin'] != chunk['destination'])]
+            buffer = StringIO()
+            df.to_csv(buffer, index=False, header=False, sep='\t')
+            buffer.seek(0)
+            with conn.cursor() as cursor:
+                cursor.copy_from(buffer, 'opensky', null='', sep='\t')
+                conn.commit()
+    except FileNotFoundError as err:
+        print(err)
     conn.close()
 
 
