@@ -1,3 +1,4 @@
+-- create table opensky with flights
 CREATE TABLE if not exists opensky
 (
     callsign VARCHAR(255),
