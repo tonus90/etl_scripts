@@ -50,7 +50,7 @@ def populate_postgres(**context):
 default_args = {
     'owner': 'emil`',
     'start_date': dt.datetime(2019, 1, 1),
-    'end_date': dt.datetime(2020, 10, 10),
+    'end_date': dt.datetime(2021, 12, 31),
     'retries': 1,
     'retry_delay': dt.timedelta(minutes=1),
 
